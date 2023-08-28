@@ -1,0 +1,41 @@
+a {
+  text-decoration: none;
+}
+ul {
+  padding:0;
+}
+li {
+  list-style: none;
+  text-align: center;
+  margin-bottom: 12px;
+}
+.home-menu li {
+  text-align: left;
+
+}
+.home-menu li:hover {
+  cursor: pointer;
+}
+.post-list li {
+  border:1px solid #282c34;
+  margin-bottom:0;
+ 
+}
+.icon {
+  max-width: 60px;
+  max-height:60px;
+}
+.usermenu {
+  display: flex;
+  padding:0 3%;
+}
+.post-list li {
+  text-align: left;
+}
+.setting {
+  text-align: left;
+  padding:0 3%;
+}
+.setting-list li {
+  text-align: left;
+}
