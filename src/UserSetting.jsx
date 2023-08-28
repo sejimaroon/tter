@@ -47,7 +47,6 @@ export function UserSetting() {
     const formData = new FormData();
     formData.append("name", name);
     
-    // Add the selected image file to the form data
     if (profileImage) {
       formData.append("icon", profileImage, profileImage.name);
     }
