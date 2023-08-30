@@ -8,7 +8,7 @@ import Compressor from "compressorjs";
 export function UserSetting() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [profileImage, setProfileImage] = useState(null);
+  const [profileImage, setProfileImage] = useState("");
   const [previewImage, setPreviewImage] = useState("");
   const icon = useSelector((state) => state.isHaveIcon);
   const [iconUrl, setIconUrl] = useState("");
@@ -19,7 +19,6 @@ export function UserSetting() {
 
   const handleProfileImageChange = async (event) => {
     const selectedImage = event.target.files[0];
-
     const compressedImage = await new Promise((resolve) => {
       new Compressor(selectedImage, {
         quality: 0.8,
@@ -34,7 +33,6 @@ export function UserSetting() {
         },
       });
     });
-
     if (compressedImage) {
       setProfileImage(compressedImage);
       setPreviewImage(URL.createObjectURL(compressedImage));
@@ -43,25 +41,18 @@ export function UserSetting() {
 
   const onSettingChange = async () => {
     console.log("Current Token:", cookies.token);
-  
-    const formData = new FormData();
-    formData.append("name", name);
-    
-    if (profileImage) {
-      formData.append("icon", profileImage, profileImage.name);
+    const data = {
+      name,
+      iconUrl
     }
   
     try {
       console.log("Sending PUT request to /setting");
-      const response = await axios.put("/setting", formData, {
+      const response = await axios.put("/setting", data, {
         headers: {
           Authorization: `Bearer ${cookies.token}`,
-          "Content-Type": "multipart/form-data",
         },
       });
-  
-      console.log("Response from /setting:", response.data);
-  
       setCookies("token", response.data.token);
       setIconUrl(response.data.iconUrl);
       setName(response.data.name);
@@ -71,16 +62,13 @@ export function UserSetting() {
       console.log(err);
       setErrorMessage(`ユーザー情報更新に失敗しました。${err}`);
     }
-  };
-  
-  
+  };  
   
   useEffect(() => {
     if (cookies.token) {
       axios
         .get("/setting")
         .then((res) => {
-          
           setName(res.data.name);
           setIconUrl(res.data.iconUrl);
         })
@@ -98,10 +86,12 @@ export function UserSetting() {
           <li>
             <label htmlFor="profile-image">
               現在のアイコン<br />
-
               <div className="now-image">
                 {icon && <p>現在のアイコン</p>}
-                {<img src={iconUrl} alt="" />}
+                {<img src={iconUrl}
+                    alt=""
+                    defaultValue={icon}
+                  />}
               </div>
               <div className="new-image">
                 <p>変更後のアイコン</p>
@@ -114,7 +104,6 @@ export function UserSetting() {
                 accept="image/*"
                 required
               />
-              <br />
               <br />
             </label>
           </li>

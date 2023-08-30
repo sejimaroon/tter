@@ -79,8 +79,8 @@ app.put('/setting', upload.single('icon'), (req, res) => {
     if (userDatabase[decodedToken.email]) {
       const user = userDatabase[decodedToken.email];
       user.name = name;
-
-      // Update the user's icon only if a new icon was provided
+      user.icon = icon;
+      
       if (req.file) {
         const newFileName = req.file.filename;
         const oldFilePath = path.join(__dirname, 'uploads', req.file.filename);
@@ -89,7 +89,6 @@ app.put('/setting', upload.single('icon'), (req, res) => {
         user.iconUrl = newFileName;
       }
 
-      // Generate a new token with updated payload
       const newToken = jwt.sign({ name: user.name, iconUrl: user.iconUrl }, 'your-secret-key', { expiresIn: '1h' });
       user.token = newToken;
 
@@ -103,8 +102,7 @@ app.put('/setting', upload.single('icon'), (req, res) => {
 });
 
 app.get("/user/icon", (req, res) => {
-  // Assuming you have the user's token or identifier, find the user in the users array
-  // and send their iconUrl
+
   const userToken = req.headers.authorization;
   const user = userDatabase.find(user => user.token === userToken);
   if (user) {
@@ -115,8 +113,7 @@ app.get("/user/icon", (req, res) => {
 });
 
 app.get("/user/name", (req, res) => {
-  // Assuming you have the user's token or identifier, find the user in the users array
-  // and send their name
+  
   const userToken = req.headers.authorization;
   const user = userDatabase.find(user => user.token === userToken);
   if (user) {

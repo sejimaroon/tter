@@ -8,11 +8,11 @@ import "./index.css";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <CookiesProvider>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-  </CookiesProvider>
+  <React.StrictMode>
+    <CookiesProvider>
+      <App />
+    </CookiesProvider>
+  </React.StrictMode>
 );
 
 reportWebVitals();

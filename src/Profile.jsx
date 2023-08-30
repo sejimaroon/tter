@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import defaultIcon from "./assets/logo192.png";
-import { useCookies } from "react-cookie"; // 追加
+import { useCookies } from "react-cookie"; 
 
 export function Profile() {
   const isSignedIn = useSelector((state) => state.auth.isSignIn);
