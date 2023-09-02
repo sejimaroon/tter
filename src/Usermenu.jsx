@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import { Post } from "./Post";
 import { PostList } from "./PostList";

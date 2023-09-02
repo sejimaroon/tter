@@ -2,16 +2,15 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useCookies } from "react-cookie";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { signIn } from "./slices/authSlice";
 
 export function SignIn ()  {
   const navigate = useNavigate();
-  const auth = useSelector((state) => state.auth.isSignIn);
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [, setCookie] = useCookies(["cookieName"]);
+  const [, setCookie] = useCookies(["token"]);
   const handleEmailChange = (e) => setEmail(e.target.value);
 
   const handlePasswordChange = (e) => setPassword(e.target.value);
@@ -27,13 +26,14 @@ export function SignIn ()  {
         const { token } = res.data;
         dispatch(signIn());       
         setCookie("token", token);
+        setCookie("email", email);
+        setCookie("password", password);
         navigate("/menu");
       })
       .catch((err) => {
         console.error(`ログインに失敗しました。`);
         navigate("/");
       });
-    if (auth) return <navigate to="/" replace />;
     
   };
   

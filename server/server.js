@@ -1,3 +1,5 @@
+import defaultIcon from "./../src/assets/logo192.png";
+
 const express = require('express');
 const app = express();
 const PORT = 3300;
@@ -5,8 +7,6 @@ const multer = require('multer');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const fs = require('fs'); 
-
-const defaultIcon = "/path/to/src/assets/logo192.png";
 
 app.use(express.json());
 app.use(express.static("./dist"));
@@ -32,6 +32,7 @@ app.post('/signin', (req, res) => {
   const token = jwt.sign({ email, name: userDatabase[email].name }, 'your-secret-key', { expiresIn: '1h' });
   userDatabase[email].token = token;
   res.json({ message: 'ログインに成功しました。', token });
+
 });
 
 const storage = multer.diskStorage({
@@ -47,30 +48,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-app.post('/uploads', upload.single('icon'), (req, res) => {
-  const userToken = req.headers.authorization;
-
-  try {
-    jwt.verify(userToken, 'your-secret-key');
-
-    const newFileName = req.file.filename;
-    const oldFilePath = path.join(__dirname, 'uploads', req.file.filename);
-    const newFilePath = path.join(__dirname, 'uploads', newFileName);
-    fs.renameSync(oldFilePath, newFilePath);
-
-    if (userDatabase[userToken]) {
-      userDatabase[userToken].iconUrl = newFileName;
-    }
-
-    res.json({ message: 'プロフィール画像がアップロードされました。' });
-  } catch (error) {
-    res.status(401).json({ error: 'トークンが無効です。' });
-  }
-});
-
-// サーバー側のapp.put('/setting', ...)ルートの修正
 app.put('/setting', upload.single('icon'), (req, res) => {
-  const { name } = req.body; // Get the name from the form data
+  const { name } = req.body;
   const userToken = req.headers.authorization;
 
   try {
@@ -79,8 +58,7 @@ app.put('/setting', upload.single('icon'), (req, res) => {
     if (userDatabase[decodedToken.email]) {
       const user = userDatabase[decodedToken.email];
       user.name = name;
-      user.icon = icon;
-      
+
       if (req.file) {
         const newFileName = req.file.filename;
         const oldFilePath = path.join(__dirname, 'uploads', req.file.filename);
@@ -89,7 +67,7 @@ app.put('/setting', upload.single('icon'), (req, res) => {
         user.iconUrl = newFileName;
       }
 
-      const newToken = jwt.sign({ name: user.name, iconUrl: user.iconUrl }, 'your-secret-key', { expiresIn: '1h' });
+      const newToken = jwt.sign({ email: decodedToken.email, name: user.name, iconUrl: user.iconUrl }, 'your-secret-key', { expiresIn: '1h' });
       user.token = newToken;
 
       res.json({ message: 'ユーザー情報が更新されました。', token: newToken, iconUrl: user.iconUrl, name: user.name });
@@ -101,10 +79,11 @@ app.put('/setting', upload.single('icon'), (req, res) => {
   }
 });
 
+
 app.get("/user/icon", (req, res) => {
 
   const userToken = req.headers.authorization;
-  const user = userDatabase.find(user => user.token === userToken);
+  const user = Object.values(userDatabase).find(user => user.token === userToken);
   if (user) {
     res.json({ iconUrl: user.iconUrl });
   } else {
@@ -115,7 +94,7 @@ app.get("/user/icon", (req, res) => {
 app.get("/user/name", (req, res) => {
   
   const userToken = req.headers.authorization;
-  const user = userDatabase.find(user => user.token === userToken);
+  const user = Object.values(userDatabase).find(user => user.token === userToken);
   if (user) {
     res.json({ username: user.name });
   } else {

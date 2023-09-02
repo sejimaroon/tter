@@ -8,7 +8,7 @@ export function Profile() {
   const isSignedIn = useSelector((state) => state.auth.isSignIn);
   const [iconUrl, setIconUrl] = useState("");
   const [name, setName] = useState(""); // ユーザー名を格納するためのステート
-  const [cookies] = useCookies(["name"]); // クッキーからユーザー名を取得
+  const [cookies] = useCookies(["token"]); // クッキーからユーザー名を取得
 
   useEffect(() => {
     if (isSignedIn) {
@@ -26,11 +26,10 @@ export function Profile() {
           console.log(err);
         });
 
-      // クッキーからユーザー名を取得してセット
       const savedName = cookies.name || "";
       setName(savedName);
     }
-  }, [isSignedIn, cookies.name, cookies.token]);
+  }, [isSignedIn, cookies.name, cookies.iconUrl, cookies.token]);
 
   return (
     <div className="profile">

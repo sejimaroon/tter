@@ -8,7 +8,7 @@ import Compressor from "compressorjs";
 export function UserSetting() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
-  const [profileImage, setProfileImage] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
   const icon = useSelector((state) => state.isHaveIcon);
   const [iconUrl, setIconUrl] = useState("");
@@ -21,9 +21,9 @@ export function UserSetting() {
     const selectedImage = event.target.files[0];
     const compressedImage = await new Promise((resolve) => {
       new Compressor(selectedImage, {
-        quality: 0.8,
-        width: 120,
-        height: 120,
+        quality: 1,
+        width: 100,
+        height: 100,
         success(result) {
           resolve(result);
         },
@@ -39,20 +39,14 @@ export function UserSetting() {
     }
   };
 
-  const onSettingChange = async () => {
-    console.log("Current Token:", cookies.token);
-    const data = {
-      name,
-      iconUrl
-    }
+  const onSettingChange = async () => {  
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("icon", profileImage);
   
     try {
-      console.log("Sending PUT request to /setting");
-      const response = await axios.put("/setting", data, {
-        headers: {
-          Authorization: `Bearer ${cookies.token}`,
-        },
-      });
+      const response = await axios.put("/setting", formData);
+      console.log("Response from /setting:", response.data);
       setCookies("token", response.data.token);
       setIconUrl(response.data.iconUrl);
       setName(response.data.name);
@@ -88,10 +82,7 @@ export function UserSetting() {
               現在のアイコン<br />
               <div className="now-image">
                 {icon && <p>現在のアイコン</p>}
-                {<img src={iconUrl}
-                    alt=""
-                    defaultValue={icon}
-                  />}
+                {<img src={iconUrl} alt="" />}
               </div>
               <div className="new-image">
                 <p>変更後のアイコン</p>
